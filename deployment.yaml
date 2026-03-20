@@ -1,0 +1,34 @@
+# Deployment — tells Kubernetes: "run 2 copies of my app"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+spec:
+  replicas: 2           # Run 2 instances
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+      - name: flask-app
+        image: nirajbjk/my-flask-app:latest
+        ports:
+        - containerPort: 5000
+---
+# Service — tells Kubernetes: "expose the app so I can visit it"
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-service
+spec:
+  type: NodePort
+  selector:
+    app: flask-app
+  ports:
+  - port: 80
+    targetPort: 5000
+    nodePort: 30007
